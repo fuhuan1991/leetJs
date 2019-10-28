@@ -1,0 +1,14 @@
+{
+  "name": "leetcode_problems",
+  "version": "1.0.0",
+  "description": "some leet code problems",
+  "main": "126.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "leetcode"
+  ],
+  "author": "Huan Fu",
+  "license": "ISC"
+}
