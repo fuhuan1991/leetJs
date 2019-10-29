@@ -21,10 +21,6 @@ var findLadders = function(beginWord, endWord, wordList) {
     const task = Q.shift();
     const {start, len, path} = task;
     const dists = getDestination(start, dict);
-    // console.log('-----------')
-    // console.log('start', start)
-    // console.log('visited',visited)
-    // console.log('path', path)
 
     for( d of dists) {
       // console.log('->', d)
