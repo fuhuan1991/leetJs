@@ -16,7 +16,7 @@ var combinationSum = function(candidates, target) {
   function f(candidates, start, rest, r, path) {
   
     const newRest = rest - candidates[start];
-    // console.log(start, newRest);
+
   
     if (newRest < 0) {
       return;
