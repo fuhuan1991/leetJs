@@ -21,7 +21,6 @@ var nextPermutation = function(nums) {
         p++;
       }
     }
-  console.log(nums)
   };
   
   function findReplacememnt (nums, index) {
