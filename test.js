@@ -1,50 +1,33 @@
 /**
- * @param {string[][]} accounts
- * @return {string[][]}
+ * @param {string} paragraph
+ * @param {string[]} banned
+ * @return {string}
  */
-var accountsMerge = function(accounts) {
-  const emails = {};
-  for (let i = 0; i <= accounts.length-1; i++) {
-    const a = accounts[i];
-    for (let j = 1; j <= a.length-1; j++) {
-      const email = a[j];
-      if (emails[email]) {
-        emails[email].push(i);
+var mostCommonWord = function(paragraph, banned) {
+  paragraph = paragraph.replace(/[!?',;.]/g, ' ');
+  // console.log(paragraph);
+  const wordArr = paragraph.trim().split(/ +/);
+  const freq = {};
+  let maxTime = 0;
+  let maxWord = '';
+
+  for (let word of wordArr) {
+    const w = word.toLowerCase();
+    if (banned.indexOf(w) === -1) {
+      // not banned
+      if (freq[w]) {
+        freq[w]++;
       } else {
-        emails[email] = [i];
+        freq[w] = 1;
+      }
+      if (freq[w] > maxTime) {
+        maxTime = freq[w];
+        maxWord = w;
       }
     }
   }
-  const bossList = [];
-  const followerList = [];
-
-  for (let i = 0; i <= accounts.length-1; i++) {
-    bossList[i] = i;
-    followerList[i] = [i];
-  }
-
-  for (let e in emails) {
-    const arr = emails[e];
-    const boss = bossList[arr[0]];
-    for (let i = 1; i <= arr.length-1; i++) {
-      if (boss === bossList[arr[i]]) continue;
-      const boss2 = bossList[arr[i]];
-      const follower2 = followerList[boss2];
-      for (let ff of follower2) {
-        bossList[ff] = boss;
-      }
-      followerList[boss] = followerList[boss].concat(follower2);
-      followerList[boss2] = null;
-    }
-  }
-  console.log(emails);
-  console.log(bossList, followerList);
+  console.log(maxWord)
+  return maxWord;
 };
 
-accountsMerge([
-  ["John","johnsmith@mail.com","john_newyork@mail.com"],
-  ["John","johnsmith@mail.com","john00@mail.com"],
-  ["Mary","mary@mail.com"],
-  ["John","johnnybravo@mail.com"],
-  ["John","johnsmith@mail.com","aa"],
-  ["John","aa"]])
+mostCommonWord('Bob hit a ball, the hit BALL flew far after it was hit.', ['hit'])
