@@ -1,53 +1,62 @@
 /**
- * @param {number[]} A
- * @param {number} L
- * @param {number} M
+ * @param {number[]} nums1
+ * @param {number[]} nums2
  * @return {number}
  */
-var maxSumTwoNoOverlap = function(A, L, M) {
-
-  const preSum = [];
-  let sum = 0;
-
-  for (let i = 0; i <= A.length-1; i++) {
-    sum += A[i];
-    preSum[i] = sum;
-  }
-
-  console.log(preSum)
-  let max = -1;
-  for (let i = 0; i <= A.length-L; i++) {
-    let sumL;
-    if (i === 0) {
-      sumL = preSum[i + L - 1];
-    } else {
-      sumL = preSum[i + L - 1] - preSum[i-1];
-    }
-// console.log(i, sumL)
-    sumMLeft = findSum(A, 0, i-1, M);
-    sumMRight = findSum(A, i+L, A.length-1, M);
-    
-    sumM = Math.max(sumMLeft, sumMRight);
-    console.log(i, sumL, sumM)
-    max = Math.max(max, sumL + sumM);
-  }
-  console.log(max)
-  return max
+var findMedianSortedArrays = function(nums1, nums2) {
+  return search(nums1, nums2);
 };
 
-const findSum = (A, left, right, M) => {
-  if (right - left + 1 < M) return -1;
-  let max = 0;
-  let sum = 0
-  for (i = left; i <= left + M - 1; i++) {
-    sum += A[i];
+const median = (A) => {
+  if (A.length % 2 !== 0) {
+    // odd number
+    return A[(A.length + 1) / 2 - 1];
+  } else {
+    // even number
+    const indexRight = Math.floor(A.length / 2);
+    return (A[indexRight] + A[indexRight - 1])/2;
   }
-  max = sum;
-  for (i = left + 1; i <= right - M + 1; i++) {
-    sum = sum - A[i - 1] + A[i + M - 1];
-    max = Math.max(max, sum);
-  }
-  return max;
 }
 
-maxSumTwoNoOverlap([2,1,5,6,0,9,5,0,3,8], 4,3)
+const search = (A, B) => {
+  console.log(A, B)
+  if (A.length === 1 || B.length === 1 || A.length === 0 || B.length === 0) {
+    return median(A.concat(B).sort((a,b) => a-b));
+  }
+  if (A.length + B.length <= 4) {
+    const C = A.concat(B).sort((a,b) => a-b);
+    return median(C);
+  }
+  // if (A.length === 2 && B.length === 2) {
+  //   return (Math.max(A[0], B[0]) + Math.min(A[1], B[1]))/2;
+  // }
+  const m1 = median(A);
+  const m2 = median(B);
+
+  if (m1 === m2) return m1;
+  if (m1 > m2) return search(leftHalf(A), rightHalf(B));
+  if (m1 < m2) return search(rightHalf(A), leftHalf(B));
+}
+const leftHalf = (A) => {
+  if (A.length === 1) {
+    return A;
+  } else if (A.length%2 === 0){
+    return A.slice(0, A.length/2);
+  } else {
+    return A.slice(0, (A.length+1)/2);
+  }
+}
+
+const rightHalf = (A) => {
+  if (A.length === 1) {
+    return A;
+  } else if (A.length%2 === 0){
+    return A.slice(A.length/2);
+  } else {
+    return A.slice((A.length-1)/2);
+  }
+}
+
+// console.log(med.ian([1,3,4]) )
+// console.log(rightHalf([1]))
+console.log(findMedianSortedArrays([1,2], [3,4,5,6]))
