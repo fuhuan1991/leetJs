@@ -1,27 +1,17 @@
 /**
- * @param {number[]} stones
+ * @param {number[]} coins
+ * @param {number} amount
  * @return {number}
  */
-var lastStoneWeightII = function(stones) {
-  let sum = 0;
-  for (let w of stones) {
-    sum += w;
-  }
-  const dp = new Array(Math.floor(sum/2) + 1).fill(false)
-  dp[0] = true;
+var coinChange = function(coins, amount) {
 
-  for (let w of stones) {
-    for (let s = dp.length-1; s >= w; s--) {
-      dp[s] = dp[s] || dp[s-w];
+  const dp = new Array(amount+1).fill(Infinity);
+  dp[0] = 0;
+
+  for (let coin of coins) {
+    for (let i = coin; i <= amount; i++) {
+      dp[i] = Math.min(dp[i], dp[i-coin]+1);
     }
   }
-  let p = dp.length-1;
-  while (!dp[p]) {
-    p--;
-  }
-  console.log(sum,dp)
-  return sum - p - p;
-
+  return dp[amount] === Infinity? -1 : dp[amount];
 };
-
-lastStoneWeightII([2,7,4,1,8,1])

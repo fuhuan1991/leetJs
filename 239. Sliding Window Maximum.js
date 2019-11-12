@@ -1,37 +1,52 @@
-/**
- * @param {number[]} nums
- * @param {number} k
- * @return {number[]}
- */
-var maxSlidingWindow = function(nums, k) {
+const Alerter = (inputs, windowSize, allowedIncrease) => {
   const deque = [];
-  if (nums.length === 0 || k ===0) return [];
-  if (nums.length === 1) return nums;
+  const output = [];
 
-  // initial the deque
-  for (let i = 0; i <= k - 1; i++) {
-    clearDeque(i, k, deque, nums);
+  // initialize the deque:
+  // The deque stores the index of every input value
+  let sum = 0;
+  for (let i = 0; i <= windowSize - 1; i++) {
+    // set up the deque for initial window
+    clearDeque(i, windowSize, deque, inputs);
     deque.push(i);
+    sum += inputs[i];
+  }
+  // check if the biggest value in the widow is more than allowedIncrease
+  const avg = sum/windowSize;
+  if (inputs[deque[0]] > avg * allowedIncrease) {
+    output.push(true);
+  } else {
+    output.push(false);
   }
 
-  // output array
-  const r = [];
-  r.push(nums[deque[0]]);
-  for (let i = k; i <= nums.length-1; i++) {
-    clearDeque(i, k, deque, nums);
+  // each time the window moves right, there will be a new element pushed into 
+  // the deque from right and an old element removed from left.
+  // Before the new element enter the deque, every element smaller than the new one 
+  // will be removed from the deque.
+  // In this way, deque[0] is always this the index of the biggest input.
+  for (let i = windowSize; i <= inputs.length-1; i++) {
+    clearDeque(i, windowSize, deque, inputs);
     deque.push(i);
-    r.push(nums[deque[0]]);
+    sum = sum - inputs[i-windowSize] + inputs[i];
+    // check if the biggest value in the widow is more than allowedIncrease
+    const max = inputs[deque[0]];
+    const avg = max/windowSize;
+    if (max > avg * allowedIncrease) {
+      output.push(true);
+    } else {
+      output.push(false);
+    }
   }
+  return output;
+}
 
-  return r;
-};
-  
-const clearDeque = (i, k, deque, nums) => {
+const clearDeque = (i, windowSize, deque, inputs) => {
   // remove the element that is out of the window's boundary.
-  if (deque[0] === i-k) deque.shift();
-  // remove all the element that is smaller than the new comer.
-  while (nums[deque[deque.length-1]] < nums[i]) {
+  if (deque[0] === i-windowSize) deque.shift();
+  // remove all the element that is smaller than the newcomer.
+  while (inputs[deque[deque.length-1]] < inputs[i]) {
     deque.pop();
   }
 }
-  
+
+console.log(Alerter([1,100,2,2,2], 3, 1.5));
