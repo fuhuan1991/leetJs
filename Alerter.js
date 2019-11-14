@@ -1,7 +1,5 @@
 const Alerter = (inputs, windowSize, allowedIncrease) => {
   const deque = [];
-  const output = [];
-
   // initialize the deque:
   // The deque stores the index of every input value
   let sum = 0;
@@ -14,12 +12,10 @@ const Alerter = (inputs, windowSize, allowedIncrease) => {
     const max = deque[0];
     const avg = max/windowSize;
     if (max > avg * allowedIncrease) {
-      output.push(true);
-    } else {
-      output.push(false);
+      return true;
     }
   }
-
+  let minAvg = avg;
   // each time the window moves right, there will be a new element pushed into 
   // the deque from right and an old element removed from left.
   // Before the new element enter the deque, every element smaller than the new one 
@@ -33,15 +29,15 @@ const Alerter = (inputs, windowSize, allowedIncrease) => {
     // check if the biggest value in the widow is more than allowedIncrease
     const max = deque[0];
     const avg = max/windowSize;
-    if (max > avg * allowedIncrease) {
-      output.push(true);
-    } else {
-      output.push(false);
+    if (max > avg * allowedIncrease || avg > minAvg * allowedIncrease) {
+      return true;
     }
+    // updata oldAvg
+    minAvg = Math.min(minAvg, avg);
   }
-
+  // if we traverse all the inputs without triggering an alert, then return false;
+  return false;
 }
-
 const clearDeque = (i, windowSize, deque, inputs) => {
   // remove the element that is out of the window's boundary.
   if (deque[0] === i-windowSize) deque.shift();

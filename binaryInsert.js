@@ -16,7 +16,6 @@ function binaryInsert (arr) {
     }
     r = r.slice(0, right).concat(current, r.slice(right))
   }
-  console.log(r)
 }
 
 binaryInsert([5,2,6,1])
