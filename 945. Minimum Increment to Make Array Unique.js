@@ -7,11 +7,11 @@ var minIncrementForUnique = function(A) {
     for (let i of A) {
         number[i]++;
     }
-
+  
     // let needToMove = null;
     let moveNumber = 0;
     let ans = 0;
-
+  
     for (let i = 0; i <= number.length-1; ++i) {
         ans += moveNumber;
         if (number[i] >= 2) {
@@ -23,19 +23,19 @@ var minIncrementForUnique = function(A) {
             // needToMove = i;
         }
     }
-
+  
     return ans;
-};
-
-// retur the result array
-var minIncrementForUnique_2 = function(A) {
+  };
+  
+  // retur the result array
+  var minIncrementForUnique_2 = function(A) {
     const number = new Array(40001).fill(0);
     for (let i of A) {
         number[i]++;
     }
-
+  
     for (let i = 0; i <= A.length-1; ++i) {
-        const x = i;
+        const x = A[i];
         if (number[x] >= 2) {
             // need to increase
             let current = x
@@ -43,9 +43,11 @@ var minIncrementForUnique_2 = function(A) {
                 ++current;
             }
             A[i] = current;
+            number[x]--;
+            number[current]++;
         }
     }
     console.log(A);
-}
-
-minIncrementForUnique_2([3,2,1,2,1,7])
+  }
+  
+  minIncrementForUnique_2([3,2,1,2,1,7])
