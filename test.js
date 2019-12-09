@@ -1,42 +1,53 @@
 /**
- * Definition for a binary tree node.
- * function TreeNode(val) {
- *     this.val = val;
- *     this.left = this.right = null;
- * }
- */
-/**
- * @param {TreeNode} root
+ * @param {number[]} A
  * @return {number}
  */
-var maxLevelSum = function(root) {
-  const level = [root];
-  let max = -Infinity;
-  let index = 1;
-  let maxIndex = 1;
-  while (level.length > 0) {
-    const sum = getSumAndUpdateLevel(level);
-    if (sum > max) {
-        max = sum;
-        maxIndex = index
-    }
-    index++;
+var minIncrementForUnique = function(A) {
+  const number = new Array(100000).fill(0);
+  for (let i of A) {
+      number[i]++;
   }
-  return maxIndex;
+
+  // let needToMove = null;
+  let moveNumber = 0;
+  let ans = 0;
+
+  for (let i = 0; i <= number.length-1; ++i) {
+      ans += moveNumber;
+      if (number[i] >= 2) {
+          // need to be moved later
+          // needToMove = i;
+          moveNumber += number[i]-1;
+      } else if (number[i] === 0 && moveNumber > 0) {
+          moveNumber--;
+          // needToMove = i;
+      }
+  }
+
+  return ans;
 };
 
-const getSumAndUpdateLevel = (level) => {
-  const len = level.length;
-  let sum = 0;
-  let i = 1;
-  while (i <= len) {
-    const node = level.shift();
-    sum += node.val;
-    if (node.left) level.push(node.left);
-    if (node.right) level.push(node.right);
-    i++;
+// retur the result array
+var minIncrementForUnique_2 = function(A) {
+  const number = new Array(40001).fill(0);
+  for (let i of A) {
+      number[i]++;
   }
-  return sum;
+
+  for (let i = 0; i <= A.length-1; ++i) {
+      const x = A[i];
+      if (number[x] >= 2) {
+          // need to increase
+          let current = x
+          while (number[current] > 0) {
+              ++current;
+          }
+          A[i] = current;
+          number[x]--;
+          number[current]++;
+      }
+  }
+  console.log(A);
 }
 
-
+minIncrementForUnique_2([3,2,1,2,1,7])
