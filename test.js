@@ -1,49 +1,81 @@
 /**
- * @param {number} low
- * @param {number} high
- * @return {number[]}
+ * @param {number[][]} mat
+ * @param {number} threshold
+ * @return {number}
  */
-var sequentialDigits = function(low, high) {
-  let strLow = low.toString();
-  let start = parseInt(strLow[0], 10);
-  let len = strLow.length;
-  const result = [];
+var maxSideLength = function(mat, threshold) {
 
-  while (true) {
-    current = generateInt(start, len);
-    if (current > high) break;
-
-    if (start + len <= 10) {
-      if (current >= low) {
-        result.push(current);
-      }
+  if (typeof mat[0] === 'number') {
+    for (let i = 0; i <= mat.length-1; i++) {
+      if (mat[i] <= threshold) return 1;
     }
-
-    if (start + len === 10) {
-      start = 1;
-      len++;
-    } else if (start < 9) {
-      start++;
-    } else {
-      start = 1;
-      len++;
+    return 0;
+  }
+  
+  const arr = [];
+  for (let i = 0; i <= mat.length-1; i++) {
+    const row = mat[i];
+    const prefixSum = [row[0]];
+    for (let j = 1; j <= mat[0].length-1; j++) {
+      prefixSum[j] = prefixSum[j-1] + row[j];
     }
-    
+    arr.push(prefixSum);
   }
 
-  return result;
+  // console.log(arr)
+  // console.log(gstSum(arr, 0,2,1));
+  // console.log(gstSum(arr, 0,2,2));
+  // console.log(gstSum(arr, 0,2,3));
+  // console.log(check(arr, 2, 3));
+
+  // binary search
+  let left = 1;
+  let right = Math.min(arr.length, arr[0].length);
+  // console.log(left, right)
+  while (left < right) {
+
+    if (left + 1 === right) {
+      if (check(arr, right, threshold)) return right;
+      if (check(arr, left, threshold)) return left;
+      return 0;
+    }
+
+    const mid = Math.floor((left+right)/2);
+    if (check(arr, mid, threshold)) {
+      left = mid;
+    } else {
+      right = mid;
+    }
+    // console.log(left, right)
+  }
+  // console.log(left, right)
+
 };
 
-const generateInt = (start, len) => {
-  // 2 <= len <= 9
-  let r = 0;
-  let base = Math.pow(10, len-1);
+const gstSum = (arr, i, j, len) => {
 
-  for (let i = 0; i <= len-1; i++) {
-    r = r + base * (start + i);
-    base = base / 10;
+  if (len === 1) {
+    if (j === 0) {
+      return arr[i][j];
+    } else {
+      return arr[i][j] - arr[i][j-1];
+    }
   }
-  return r;
+  let sum = 0;
+  for (let ii = i; ii <= i + len-1; ii++) {
+    let start = j===0 ? 0 : arr[ii][j-1];
+    sum = sum + arr[ii][j+len-1] - start;
+  }
+  return sum;
 }
 
-console.log(sequentialDigits(8511,23553));
+const check = (arr, len, threshold) => {
+  for (let i = 0; i <= arr.length-len; i++) {
+    for (let j = 0; j <= arr[0].length-len; j++) {
+      if (gstSum(arr, i, j, len) <= threshold) return true;
+    }
+  }
+  return false;
+}
+
+maxSideLength([[18,70],[61,1],[25,85],[14,40],[11,96],[97,96],[63,45]], 401845)
