@@ -1,70 +1,34 @@
 /**
- * @param {number[]} arr
- * @param {number} k
+ * @param {number[][]} grid
  * @return {number}
  */
-var kConcatenationMaxSum = function(arr, k) {
-  if (k === 1) {
-    const r = A1(arr);
-    return r > 0 ? r%(Math.pow(10,9)+7) : 0;
-  } else{
-    const sum = arr.reduce((p,c) => p + c, 0);
-    // console.log(sum)
-    if (sum >= 0) {
+var countCornerRectangles = function(grid) {
+  const height = grid.length;
+  const length = grid[0].length;
+  let result = 0;
 
-      let temp = 0;
-      let max = arr[0];
-      for (let i = 0; i <= arr.length-1; i++) {
-        temp += arr[i];
-        max = Math.max(max, temp);
-      }
-      const maxPreffix = max;
+  const count = new Array(height).fill(0);
+  for (let i = 0; i <= height-1; i++) {
+    count[i] = new Array(length).fill(0);
+  }
 
-      temp = 0;
-      max = arr[arr.length - 1];
-      for (let i = arr.length-1; i >= 0; i--) {
-        temp += arr[i];
-        max = Math.max(max, temp);
-      }
-      const maxSuffix = max;
+  for (let i = 0; i <= height - 1; i++) {
+    const currentRow = grid[i];
 
-      return ((k - 2) * sum + maxPreffix + maxSuffix)%(Math.pow(10,9)+7);
-    } else {
-      let temp = 0;
-      let max = arr[0];
-      for (let i = 0; i <= arr.length-1; i++) {
-        temp += arr[i];
-        max = Math.max(max, temp);
-      }
-      const maxPreffix = max;
-
-      temp = 0;
-      max = arr[arr.length - 1];
-      for (let i = arr.length-1; i >= 0; i--) {
-        temp += arr[i];
-        max = Math.max(max, temp);
-      }
-      const maxSuffix = max;
-      const r = A1(arr);
-      return Math.max(0, r, maxSuffix, maxPreffix, maxPreffix + maxSuffix)%(Math.pow(10,9)+7);
+    for (let col1 = 0; col1 <= length-2; col1++) {
+      if (currentRow[col1] === 1) {
+        for (let col2 = col1 + 1; col2 <= length-1; col2++) {
+          if (currentRow[col1] === 1 && currentRow[col2] === 1) {
+            result += count[col1][col2];
+            count[col1][col2]++;
+          }
+        }
+      } 
     }
   }
+
+  return result;
 };
 
-const A1 = (arr) => {
-  let sum = arr[0];
-  let max = sum;
-  for (let i = 1; i <= arr.length-1; i++) {
-    const newEle = arr[i];
-    if (newEle > sum + newEle) {
-      sum = newEle;
-    } else {
-      sum = sum + newEle;
-    }
-    max = Math.max(max, sum);
-  }
-  return max;
-}
 
-// console.log(A1([1,2,-7,4,-2,6,-4,2,5]))
-console.log(kConcatenationMaxSum([-9,13,4,-16,-12,-16,3,-7,5,-16,16,8,-1,-13,15,3],6))
+
