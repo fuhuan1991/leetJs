@@ -1,81 +1,18 @@
-/**
- * @param {number} m
- * @param {number} n
- * @param {number} N
- * @param {number} i
- * @param {number} j
- * @return {number}
- */
-var findPaths = function(m, n, N, i, j) {
-  if (N === 0) return 0;
-  const dp = new Array(m);
-
-  for (let i = 0; i <= m-1; i++) {
-    dp[i] = new Array(n);
-    for (let j = 0; j <= n-1; j++) {
-      dp[i][j] = new Array(N).fill(-1);
-    }
+var longestCommonSubsequence = function(text1, text2) {
+  let temp = [];
+  let max = 0;
+  for(let i = 0; i <= text1.length; i++) {
+      temp.push(new Array(text2.length + 1).fill(0));
   }
-
-  return helper(i, j, m, n, N, dp);
-  
+  for(let i = 1; i < temp.length; i++) {
+      for(let j = 1; j < temp[0].length; j++) {
+          if(text1[i-1] === text2[j-1]) {
+              temp[i][j] = temp[i-1][j-1] + 1
+          } else {
+              temp[i][j] = Math.max(temp[i-1][j], temp[i][j-1]);
+          }
+          max = Math.max(max, temp[i][j]);
+      }
+  }
+  return max;
 };
-
-const helper = (i, j, m, n, moves, dp) => {
-  const M = 1000000007;
-  let r = 0;
-  if (moves === 1) {
-    if (i === 0) r++;
-    if (i === m - 1) r++;
-    if (j === 0) r++;
-    if (j === n-1) r++;
-    return r;
-  } else {
-    if (i === 0) r++;
-    if (i === m - 1) r++;
-    if (j === 0) r++;
-    if (j === n-1) r++;
-
-    if (i > 0) {
-      if (dp[i - 1][j][moves - 1]  > -1) {
-        r += dp[i - 1][j][moves - 1];
-      } else {
-        const temp = helper(i - 1, j, m, n, moves - 1, dp) % M;
-        r = r + temp;
-        dp[i - 1][j][moves - 1] = temp;
-      }
-    }
-    
-    if (i < m-1) {
-      if (dp[i + 1][j][moves - 1]  > -1) {
-        r += dp[i + 1][j][moves - 1];
-      } else {
-        const temp = helper(i + 1, j, m, n, moves - 1, dp) % M;
-        r = r + temp;
-        dp[i + 1][j][moves - 1] = temp;
-      }
-    }
-
-    if (j > 0) {
-      if (dp[i][j - 1][moves - 1]  > -1) {
-        r += dp[i][j - 1][moves - 1];
-      } else {
-        const temp = helper(i, j - 1, m, n, moves - 1,dp) % M;
-        r = r + temp;
-        dp[i][j - 1][moves - 1] = temp;
-      }
-    }
-
-    if (j < n - 1) {
-      if (dp[i][j + 1][moves - 1]  > -1) {
-        r += dp[i][j + 1][moves - 1];
-      } else {
-        const temp = helper(i, j + 1, m, n, moves - 1,dp) % M;
-        r = r + temp;
-        dp[i][j + 1][moves - 1] = temp;
-      }
-    }
-
-    return r;
-  }
-}
