@@ -1,56 +1,33 @@
 /**
- * @param {number} nodes
- * @param {number[]} parent
- * @param {number[]} value
+ * @param {number[][]} A
  * @return {number}
  */
-var deleteTreeNodes = function(nodes, parent, value) {
-  const nodeMap = {};
-  const blockedNodes = {};
-
-  for (let i = 0; i <= parent.length - 1; i++) {
-    const p = parent[i];
-    if (nodeMap[p] === undefined) {
-      nodeMap[p] = [i];
-    } else {
-      nodeMap[p].push(i);
+var minFallingPathSum = function(A) {
+  const N = A.length;
+  const dp = new Array(N).fill(0);
+  for (let i = 0; i <= N-1; i++) {
+    dp[i] = new Array(N).fill(0);
+    if (i === N-1) {
+      dp[i] = A[N-1].slice();
     }
   }
-  analyzeNode(nodeMap, 0, value, blockedNodes);
+  console.log(dp);
 
-  // run a BFS, count the number of node left.
-  const queue = [0];
-  let result = 0;
-  
-  while (queue.length > 0) {
-    const index = queue.shift();
-    if (blockedNodes[index] === undefined) {
-      result++;
-      if (nodeMap[index] !== undefined) {
-        for (let child of nodeMap[index]) {
-          queue.push(child);
-        }
+  for (let row = N-2; row >=0; row--) {
+    for (let col = 0; col <= N-1; col++) {
+      if (col === 0) {
+        dp[row][col] = A[row][col] + Math.min(dp[row+1][col], dp[row+1][col+1]);
+      } else if (col === N-1) {
+        dp[row][col] = A[row][col] + Math.min(dp[row+1][col], dp[row+1][col-1]);
+      } else {
+        dp[row][col] = A[row][col] + Math.min(dp[row+1][col], dp[row+1][col+1], dp[row+1][col-1]);
       }
     }
   }
-  return result;
-  // console.log(blockedNodes)
-};
-
-const analyzeNode = (nodeMap, index, value, blockedNodes) => {
-  if (nodeMap[index] === undefined) {
-    // this node has no children
-    if (value[index] === 0) blockedNodes[index] = true;
-    return value[index];
-  } else {
-    let sum = 0;
-    for (let child of nodeMap[index]) {
-      sum += analyzeNode(nodeMap, child, value, blockedNodes);
-    }
-    sum += value[index];
-    if (sum === 0) blockedNodes[index] = true;
-    return sum;
+  console.log(dp);
+  let r = dp[0][0];
+  for (let i = 0; i <= N-1; i++) {
+    r = Math.min(r, dp[0][i]);
   }
-}
-
-deleteTreeNodes(7, [-1,0,0,1,2,2,2], [1,-2,4,0,-2,-1,-1]);
+  return r;
+};
