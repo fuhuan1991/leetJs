@@ -1,35 +1,68 @@
 /**
- * @param {number[]} nums
- * @param {number} k
- * @return {boolean}
+ * @param {string} s
+ * @param {number} maxLetters
+ * @param {number} minSize
+ * @param {number} maxSize
+ * @return {number}
  */
-var isPossibleDivide = function(nums, k) {
-  nums.sort((a, b) => a - b);
-  const Q = [];
-  for (let i = 0; i <= nums.length - 1; i++) {
-    const current = nums[i];
-    if (Q.length === 0 || Q[0].val === current) {
-      // add new
-      Q.push({val: current, currentLength: 1});
-    } else if (Q[0].val === current - 1) {
-      // update
-      const o = Q.shift();
-      o.val = current;
-      o.currentLength++;
-      if (o.currentLength < k) {
-        Q.push(o);
-      }
-    } else {
-      // stop
-      return false;
-    }
-    console.log(Q)
+var maxFreq = function(s, maxLetters, minSize, maxSize) {
+  let maxOcc = 0;
+
+  for (let len = minSize; len <= maxSize; len ++) {
+    const maxOcc_with_current_len = helper(s, len, maxLetters);
+    maxOcc = Math.max(maxOcc, maxOcc_with_current_len);
   }
-  if (Q.length === 0) {
-    return true;
-  } else {
-    return false;
-  }
+
+  return maxOcc;
 };
 
-isPossibleDivide([1,2,3,3,4,4,5,6], 4)
+const helper = (s, len, maxLetters) => {
+  const letters = {};
+  let letterNum = 0;
+  const strArr = {};
+  let maxOcc = 0;
+  
+  for (let start = 0; start <= s.length - len; start++) {
+    if (start === 0) {
+      for (let i = start; i <= start + len - 1; i++) {
+        const currentLetter = s[i];
+        if (letters[currentLetter]) {
+          letters[currentLetter]++;
+        } else {
+          letters[currentLetter] = 1;
+          letterNum++;
+        }
+      }
+    } else {
+
+      const lastLetter = s[start-1];
+      letters[lastLetter]--;
+      if (letters[lastLetter] === 0) {
+        letterNum--;
+      }
+
+      const newLetter = s[start + len - 1];
+      if (letters[newLetter]) {
+        letters[newLetter]++;
+      } else {
+        letters[newLetter] = 1;
+        letterNum++;
+      }
+    }
+
+    if (letterNum <= maxLetters) {
+      const str = s.slice(start, start + len);
+      if (strArr[str]) {
+        strArr[str]++
+      } else {
+        strArr[str] = 1;
+      }
+      maxOcc = Math.max(maxOcc, strArr[str]); 
+    }
+    // console.log(strArr)
+  }
+  // console.log(maxOcc)
+  return maxOcc;
+}
+
+// maxFreq("aababcaab", 2,3,4)
