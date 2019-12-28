@@ -1,68 +1,64 @@
 /**
- * @param {string} s
- * @param {number} maxLetters
- * @param {number} minSize
- * @param {number} maxSize
+ * @param {number[]} status
+ * @param {number[]} candies
+ * @param {number[][]} keys
+ * @param {number[][]} containedBoxes
+ * @param {number[]} initialBoxes
  * @return {number}
  */
-var maxFreq = function(s, maxLetters, minSize, maxSize) {
-  let maxOcc = 0;
+var maxCandies = function(status, candies, keys, containedBoxes, initialBoxes) {
+  let boxes_available = {};
+  const keys_available = {};
+  let final_candies = 0;
 
-  for (let len = minSize; len <= maxSize; len ++) {
-    const maxOcc_with_current_len = helper(s, len, maxLetters);
-    maxOcc = Math.max(maxOcc, maxOcc_with_current_len);
+  for (let index of initialBoxes) {
+    boxes_available[index] = true;
   }
 
-  return maxOcc;
+  while (true) {
+    // open boxes with keys and then throw away those keys;
+    for (let index in keys_available) {
+      // const index = keys_available[i];
+      if (boxes_available[index]) {
+        status[index] = 1;
+        delete keys_available[index];
+      }
+    }
+    // find out the boxes that you can open instantly
+    const boxes_can_be_opened = [];
+    for (let index in boxes_available) {
+      // const index = boxes_available[i];
+      if (status[index] === 1) {
+        boxes_can_be_opened.push(index);
+        delete boxes_available[index];
+      }
+    }
+    console.log(boxes_available, keys_available, boxes_can_be_opened)
+
+    if (boxes_can_be_opened.length === 0) break;
+
+    for (let index of boxes_can_be_opened) {
+      // open the box with a specific index
+      // get candies
+      final_candies += candies[index];
+      // update boxes_available
+      for (let i of containedBoxes[index]) {
+        boxes_available[i] = true;
+      }
+      // keys_available
+      for (let i of keys[index]) {
+        keys_available[i] = true;
+      }
+    }
+  }
+
+  return final_candies;
 };
 
-const helper = (s, len, maxLetters) => {
-  const letters = {};
-  let letterNum = 0;
-  const strArr = {};
-  let maxOcc = 0;
-  
-  for (let start = 0; start <= s.length - len; start++) {
-    if (start === 0) {
-      for (let i = start; i <= start + len - 1; i++) {
-        const currentLetter = s[i];
-        if (letters[currentLetter]) {
-          letters[currentLetter]++;
-        } else {
-          letters[currentLetter] = 1;
-          letterNum++;
-        }
-      }
-    } else {
 
-      const lastLetter = s[start-1];
-      letters[lastLetter]--;
-      if (letters[lastLetter] === 0) {
-        letterNum--;
-      }
-
-      const newLetter = s[start + len - 1];
-      if (letters[newLetter]) {
-        letters[newLetter]++;
-      } else {
-        letters[newLetter] = 1;
-        letterNum++;
-      }
-    }
-
-    if (letterNum <= maxLetters) {
-      const str = s.slice(start, start + len);
-      if (strArr[str]) {
-        strArr[str]++
-      } else {
-        strArr[str] = 1;
-      }
-      maxOcc = Math.max(maxOcc, strArr[str]); 
-    }
-    // console.log(strArr)
-  }
-  // console.log(maxOcc)
-  return maxOcc;
-}
-
-// maxFreq("aababcaab", 2,3,4)
+console.log(maxCandies(
+  [1,0,1,0],
+  [7,5,4,100],
+  [[],[],[1],[]],
+  [[1,2],[3],[],[]],
+  [0]))
