@@ -1,25 +1,35 @@
 /**
- * @param {string} p
- * @return {number}
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {boolean}
  */
-var findSubstringInWraproundString = function(p) {
-  const count = new Array(26).fill(0);
-  // let start;
-  let currentLen = 1;
-
-  for (let i = 0; i <= p.length-1; i++) {
-    if (i > 0 && p.charCodeAt(i) === p.charCodeAt(i-1)+1 || p.charCodeAt(i) === p.charCodeAt(i-1) - 25) {
-      currentLen++;
-
+var isPossibleDivide = function(nums, k) {
+  nums.sort((a, b) => a - b);
+  const Q = [];
+  for (let i = 0; i <= nums.length - 1; i++) {
+    const current = nums[i];
+    if (Q.length === 0 || Q[0].val === current) {
+      // add new
+      Q.push({val: current, currentLength: 1});
+    } else if (Q[0].val === current - 1) {
+      // update
+      const o = Q.shift();
+      o.val = current;
+      o.currentLength++;
+      if (o.currentLength < k) {
+        Q.push(o);
+      }
     } else {
-      currentLen = 1;
-      // start = i;
+      // stop
+      return false;
     }
-    const index = p.charCodeAt(i) - 97;
-    count[index] = Math.max(count[index], currentLen);
+    console.log(Q)
   }
-
-  return count.reduce((a, b) => a + b, 0);
+  if (Q.length === 0) {
+    return true;
+  } else {
+    return false;
+  }
 };
 
-console.log(findSubstringInWraproundString('zab'))
+isPossibleDivide([1,2,3,3,4,4,5,6], 4)
