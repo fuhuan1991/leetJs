@@ -1,29 +1,24 @@
 /**
  * @param {number[]} A
+ * @param {number[]} B
  * @return {number}
  */
-var subarrayBitwiseORs = function(A) {
+var minSwap = function(A, B) {
   const N = A.length;
-  const set = new Set();
-  let lastRowSet = new Set();
-  set.add(A[N-1]);
-  lastRowSet.add(A[N-1]);
-  
-  for (let i = N-1; i >= 0; --i) {
-    const newSet = new Set();
-    const I = lastRowSet.values();
-    let o = I.next();
-    newSet.add(A[i]);
-    set.add(A[i]);
+  const dp_s = [1];
+  const dp_n = [0];
 
-    while (!o.done) {
-      const newValue = o.value | A[i];
-      newSet.add(newValue);
-      set.add(newValue);
-      o = I.next();
+  for (let i = 1; i <= N-1; ++i) {
+    if (A[i] > A[i-1] && A[i] > B[i-1] && B[i] > A[i-1] && B[i] > B[i-1]) {
+      dp_s[i] = Math.min(dp_s[i-1], dp_n[i-1]) + 1;
+      dp_n[i] = Math.min(dp_s[i-1], dp_n[i-1]);
+    } else if (A[i] > A[i-1] && B[i] > B[i-1]) {
+      dp_s[i] = dp_s[i-1] + 1;
+      dp_n[i] = dp_n[i-1]; 
+    } else {
+      dp_s[i] = dp_n[i-1] + 1;
+      dp_n[i] = dp_s[i-1]; 
     }
-    lastRowSet = newSet;
   }
-
-  return set.size;
+  return Math.min(dp_n[N-1], dp_s[N-1]);
 };
