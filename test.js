@@ -1,29 +1,25 @@
 /**
- * @param {number[][]} books
- * @param {number} shelf_width
+ * @param {string} p
  * @return {number}
  */
-var minHeightShelves = function(books, shelf_width) {
-  const dp = [0, books[0][1]];
-  const N = books.length;
+var findSubstringInWraproundString = function(p) {
+  const count = new Array(26).fill(0);
+  // let start;
+  let currentLen = 1;
 
-  for (let i = 2; i <= N; i++) {
-    dp[i] = dp[i-1] + books[i-1][1];
-    let widthOfNewLevel = books[i-1][0];
-    let heightOfNewLevel = books[i-1][1];
+  for (let i = 0; i <= p.length-1; i++) {
+    if (i > 0 && p.charCodeAt(i) === p.charCodeAt(i-1)+1 || p.charCodeAt(i) === p.charCodeAt(i-1) - 25) {
+      currentLen++;
 
-    for (let j = i-1; j > 0; j--) {
-      
-      if (widthOfNewLevel + books[j-1][0] > shelf_width) break;
-      widthOfNewLevel = widthOfNewLevel + books[j-1][0];
-      heightOfNewLevel = Math.max(heightOfNewLevel, books[j-1][1]);
-      dp[i] = Math.min(dp[i], dp[j-1] + heightOfNewLevel);
+    } else {
+      currentLen = 1;
+      // start = i;
     }
-    console.log(dp)
+    const index = p.charCodeAt(i) - 97;
+    count[index] = Math.max(count[index], currentLen);
   }
 
-  return dp[N];
+  return count.reduce((a, b) => a + b, 0);
 };
 
-minHeightShelves([[7,3],[8,7],[2,7],[2,5]],10);
-//,
+console.log(findSubstringInWraproundString('zab'))
