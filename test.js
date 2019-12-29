@@ -1,49 +1,30 @@
 /**
- * @param {number} N
- * @param {number} K
- * @return {number[]}
+ * @param {number} n
+ * @return {number}
  */
-var numsSameConsecDiff = function(N, k) {
-  const dp = new Array(10);
-  for (let i = 0; i <= 9; i++) {
-    dp[i] = new Array(N+1).fill('x');
-  }
+var getMoneyAmount = function(n) {
+const dp = new Array(n+2);
+for (let i = 0; i <= n+1; i++) {
+  dp[i] = new Array(n+2).fill(0);
+}
 
-  for (let len = 1; len <= N; len++) {
+// console.log(dp)
+for (len = 2; len <= n; len ++) {
+  // console.log(dp)
+  for (start = 1; start <= n - len + 1; start ++) {
     // console.log(dp)
-    for (let digit = 0; digit <= 9; digit++) {
+    let min = Infinity;
 
-      if (len === 1) {
-        const s = new Set();
-        s.add(digit);
-        dp[digit][len] = s;
-      } else {
-        let tempArr = [];
-        if (digit + k <= 9) {
-          const oldSet = dp[digit + k][len - 1];
-          const newIntArr = [...oldSet].map(integer => parseInt(integer.toString() + digit.toString(), 10));
-          // console.log(tempArr)
-          tempArr = [...tempArr, ...newIntArr];
-        }
-
-        if (digit - k >= 0) {
-          const oldSet = dp[digit - k][len - 1];
-          const newIntArr = [...oldSet].map(integer => parseInt(integer.toString() + digit.toString(), 10));
-          // console.log('a',newIntArr)
-          tempArr = [...tempArr, ...newIntArr];
-        }
-        console.log(tempArr)
-        dp[digit][len] = new Set(tempArr);
-      }
+    for (pivot = start; pivot <= start + len - 1; pivot ++) {
+      const value = pivot + Math.max(dp[start][pivot - 1], dp[pivot + 1][start + len - 1]);
+      min = Math.min(min, value);
+      // console.log(pivot,value,dp[start][pivot - 1],dp[pivot + 1][pivot + len - 1])
     }
+    dp[start][start + len - 1] = min;
   }
-    
-  let r = [];
-  for (let digit = 0; digit <= 9; digit++) {
-    r = [...r, ...dp[digit][N]];
-  }
-    console.log(dp)
-  return r.filter(int => int.toString().length === N);
+}
+return  dp[1][n];
+
 };
 
-numsSameConsecDiff(2,1);
+getMoneyAmount(4)
