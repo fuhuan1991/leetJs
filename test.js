@@ -1,47 +1,41 @@
 /**
- * @param {string} s
- * @param {string} t
- * @return {boolean}
+ * @param {string[]} strs
+ * @param {number} m
+ * @param {number} n
+ * @return {number}
  */
-var isOneEditDistance = function(s, t) {
-  // if (s.length + t.length === 1) {
-  //   return true;
-  // }
-  let i = 0;
-  let j = 0;
-  // let edited = false;
+var findMaxForm = function(strs, m, n) {
+  const dp = new Array(m+1);
+  for (let i = 0; i <= m; i++) {
+    dp[i] = new Array(n+1).fill(0);
+  }
+  // console.log(dp);
 
-  while (i <= s.length-1 && j <= t.length-1) {
-    if (s[i] === t[j]) {
-      i++;
-      j++;
-    } else {
-      // edited = true;
-      //delete
-      const r1 = secondChance(s, t, i+1, j);
-      //insert
-      const r2 = secondChance(s, t, i, j+1);
-      //replace
-      const r3 = secondChance(s, t, i+1, j+1);
-      return r1 || r2 || r3;
+  for (let str of strs) {
+    const ones = counter(str)[1];
+    const zeros = counter(str)[0];
+
+    for (let i = m; i >= zeros; i--) {
+      for (let j = n; j>= ones; j--) {
+        dp[i][j] = Math.max(dp[i][j], dp[i-zeros][j-ones] + 1);
+      }
     }
   }
-  if (Math.abs(s.length-t.length) === 1) return true;
-  return false;
+  console.log(dp)
+  return dp[m][n];
+
 };
 
-const secondChance = (s, t, i, j) => {
-  while (i <= s.length-1 && j <= t.length-1) {
-    if (s[i] === t[j]) {
-      i++;
-      j++;
+const counter = (str) => {
+  const r = [0, 0];
+  for (let i = 0; i <= str.length-1; i++) {
+    if (str[i] === '0') {
+      r[0]++;
     } else {
-      return false;
+      r[1]++;
     }
   }
-  if (s.length - i === t.length - j) {
-    return true;
-  } else {
-    return false;
-  }
-} 
+  return r;
+}
+
+findMaxForm(["10", "0001", "111001", "1", "0"], 5, 3);
