@@ -1,88 +1,36 @@
 /**
- * @param {number} N
- * @param {number[][]} mines
+ * @param {number[]} A
  * @return {number}
  */
-var orderOfLargestPlusSign = function(N, mines) {
-  const arrLeft = new Array(N);
-  const arrRight = new Array(N);
-  const arrUp = new Array(N);
-  const arrDown = new Array(N);
-  const arrMines = new Array(N);
-
-  for (let i = 0; i <= N-1; ++i) {
-    arrLeft[i] = new Array(N).fill(0);
-    arrRight[i] = new Array(N).fill(0);
-    arrUp[i] = new Array(N).fill(0);
-    arrDown[i] = new Array(N).fill(0);
-    arrMines[i] = new Array(N).fill(0);
-  }
-
-  for (let mine of mines) {
-    arrMines[mine[0]][mine[1]] = 1;
+var minScoreTriangulation = function(A) {
+  const N = A.length;
+  const mem = new Array(N);
+  for (let i = 0; i <= N-1; i++) {
+    mem[i] = new Array(N).fill(0);
   }
   
-  for (let i = 0; i <= N-1; ++i) {
-    let sum = 0;
-    for (let j = 0; j <= N-1; ++j) {
-      arrLeft[i][j] = sum;
-      if (arrMines[i][j] === 0) {
-        sum++;
-      } else {
-        sum = 0;
-      }
-    }
-  }
-  // console.log(arrLeft)
-  for (let i = 0; i <= N-1; ++i) {
-    let sum = 0;
-    for (let j = N-1; j >= 0; --j) {
-      arrRight[i][j] = sum;
-      if (arrMines[i][j] === 0) {
-        sum++;
-      } else {
-        sum = 0;
-      }
-    }
-  }
-  // console.log(arrRight)
-  for (let j = 0; j <= N-1; ++j) {
-    let sum = 0;
-    for (let i = 0; i <= N-1; ++i) {
-      arrUp[i][j] = sum;
-      if (arrMines[i][j] === 0) {
-        sum++;
-      } else {
-        sum = 0;
-      }
-    }
-  }
-  // console.log(arrUp)
-  for (let j = 0; j <= N-1; ++j) {
-    let sum = 0;
-    for (let i = N-1; i >= 0; --i) {
-      arrDown[i][j] = sum;
-      if (arrMines[i][j] === 0) {
-        sum++;
-      } else {
-        sum = 0;
-      }
-    }
-  }
-  // console.log(arrDown)
-  let max = 0;
-  for (let i = 0; i <= N-1; ++i) {
-    for (let j = 0; j <= N-1; ++j) {
-      if (arrMines[i][j] === 0) {
-        const m = Math.min(arrLeft[i][j], arrRight[i][j], arrUp[i][j], arrDown[i][j]);
-        max = Math.max(1, max, m+1);
-      }
-    }
-  }
-  return max;
+  const r = rec(0, N-1, A, mem);
+  // console.log(mem)
+  return r;
 };
 
+const rec = (from, to, A, mem) => {
+  if (mem[from][to]) return mem[from][to];
 
+  if (from + 1 === to) {
+    return 0;
+  } else if (from + 2 === to) {
+    return A[from] * A[from+1] * A[to];
+  } else {
+    let minValue = Infinity;
+    for (let i = from + 1; i<= to - 1; i++) {
+      // const middleValue = 
+      const value = rec(from, i, A, mem) + A[from] * A[i] * A[to] + rec(i, to, A, mem);
+      minValue = Math.min(minValue, value);
+    }
+    mem[from][to] = minValue;
+    return minValue;
+  }
+}
 
-
-orderOfLargestPlusSign(5, [])
+// console.log(minScoreTriangulation([3,7,4,5]))
