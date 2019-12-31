@@ -1,35 +1,88 @@
 /**
- * @param {number[]} prob
- * @param {number} target
+ * @param {number} N
+ * @param {number[][]} mines
  * @return {number}
  */
-var probabilityOfHeads = function(prob, target) {
-  const N = prob.length;
-  const dp = new Array(N+1);
-  prob.unshift(0);
+var orderOfLargestPlusSign = function(N, mines) {
+  const arrLeft = new Array(N);
+  const arrRight = new Array(N);
+  const arrUp = new Array(N);
+  const arrDown = new Array(N);
+  const arrMines = new Array(N);
 
-  for (let i = 0; i <= N; i++) {
-    dp[i] = new Array(N+1).fill(0);
+  for (let i = 0; i <= N-1; ++i) {
+    arrLeft[i] = new Array(N).fill(0);
+    arrRight[i] = new Array(N).fill(0);
+    arrUp[i] = new Array(N).fill(0);
+    arrDown[i] = new Array(N).fill(0);
+    arrMines[i] = new Array(N).fill(0);
   }
 
-  // console.log(dp)
-  let allTail = 1;
-  let allHead = 1;
-  for (let coins = 1; coins <= N; coins++) {
-    allHead = allHead * prob[coins];
-    allTail = allTail * (1 - prob[coins]);
-    for (let t = 0; t <= Math.min(target, coins); t++) {
-      if (t === 0) {
-        dp[coins][t] = allTail;
-      } else if (coins === t) {
-        dp[coins][t] = allHead;
+  for (let mine of mines) {
+    arrMines[mine[0]][mine[1]] = 1;
+  }
+  
+  for (let i = 0; i <= N-1; ++i) {
+    let sum = 0;
+    for (let j = 0; j <= N-1; ++j) {
+      arrLeft[i][j] = sum;
+      if (arrMines[i][j] === 0) {
+        sum++;
       } else {
-        dp[coins][t] = dp[coins-1][t] * (1-prob[coins]) + dp[coins-1][t-1] * prob[coins];
+        sum = 0;
       }
-    } 
+    }
   }
-  // console.log(dp);
-  return dp[N][target];
+  // console.log(arrLeft)
+  for (let i = 0; i <= N-1; ++i) {
+    let sum = 0;
+    for (let j = N-1; j >= 0; --j) {
+      arrRight[i][j] = sum;
+      if (arrMines[i][j] === 0) {
+        sum++;
+      } else {
+        sum = 0;
+      }
+    }
+  }
+  // console.log(arrRight)
+  for (let j = 0; j <= N-1; ++j) {
+    let sum = 0;
+    for (let i = 0; i <= N-1; ++i) {
+      arrUp[i][j] = sum;
+      if (arrMines[i][j] === 0) {
+        sum++;
+      } else {
+        sum = 0;
+      }
+    }
+  }
+  // console.log(arrUp)
+  for (let j = 0; j <= N-1; ++j) {
+    let sum = 0;
+    for (let i = N-1; i >= 0; --i) {
+      arrDown[i][j] = sum;
+      if (arrMines[i][j] === 0) {
+        sum++;
+      } else {
+        sum = 0;
+      }
+    }
+  }
+  // console.log(arrDown)
+  let max = 0;
+  for (let i = 0; i <= N-1; ++i) {
+    for (let j = 0; j <= N-1; ++j) {
+      if (arrMines[i][j] === 0) {
+        const m = Math.min(arrLeft[i][j], arrRight[i][j], arrUp[i][j], arrDown[i][j]);
+        max = Math.max(1, max, m+1);
+      }
+    }
+  }
+  return max;
 };
 
-// probabilityOfHeads([0.1,0.2,0.3,0.4,0.5],2)
+
+
+
+orderOfLargestPlusSign(5, [])
