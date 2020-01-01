@@ -1,45 +1,23 @@
 /**
- * Definition for a binary tree node.
- * function TreeNode(val) {
- *     this.val = val;
- *     this.left = this.right = null;
- * }
+ * @param {number[]} arr
+ * @param {number} start
+ * @return {boolean}
  */
-/**
- * @param {TreeNode} root1
- * @param {TreeNode} root2
- * @return {number[]}
- */
-var getAllElements = function(root1, root2) {
-  const arr1 = [];
-  inorder(root1, arr1);
-  const arr2 = [];
-  inorder(root2, arr2);
-  let i = 0, j = 0;
-  const r = [];
-// console.log(arr1, arr2)
-  while (i <= arr1.length-1 || j <= arr2.length-1) {
-    if (i === arr1.length) {
-      r.push(arr2[j]);
-      j++;
-    } else if (j === arr2.length) {
-      r.push(arr1[i]);
-      i++;
-    } else if (arr1[i] <= arr2[j]) {
-      r.push(arr1[i]);
-      i++;
-    } else {
-      r.push(arr2[j]);
-      j++;
-    }
-  }
-  return r;
+var canReach = function(arr, start) {
+  const mem = {};
+  return jump(start, arr, mem);
 };
 
-const inorder = (node, container) => {
-  if (!node) return;
+const jump = (start, arr, mem) => {
+  console.log(mem)
+  if (start < 0 || start > arr.length - 1) return false;
+  if (mem[start]) return false;
+  mem[start] = true;
+  if (arr[start] === 0) return true;
 
-  inorder(node.left, container);
-  container.push(node.val);
-  inorder(node.right, container);
+  const step = arr[start];
+
+  return jump(start+step, arr, mem) || jump(start-step, arr, mem);
 }
+
+console.log(canReach([4,2,3,0,3,1,2], 5))
