@@ -2,35 +2,29 @@
  * @param {number[]} A
  * @return {number}
  */
-var minScoreTriangulation = function(A) {
-  const N = A.length;
-  const mem = new Array(N);
-  for (let i = 0; i <= N-1; i++) {
-    mem[i] = new Array(N).fill(0);
-  }
-  
-  const r = rec(0, N-1, A, mem);
-  // console.log(mem)
-  return r;
-};
+var maxTurbulenceSize = function(A) {
+  if (A.length === 0) return 0;
+  const dp_low = [];
+  const dp_high = [];
+  let max = 1;
 
-const rec = (from, to, A, mem) => {
-  if (mem[from][to]) return mem[from][to];
-
-  if (from + 1 === to) {
-    return 0;
-  } else if (from + 2 === to) {
-    return A[from] * A[from+1] * A[to];
-  } else {
-    let minValue = Infinity;
-    for (let i = from + 1; i<= to - 1; i++) {
-      // const middleValue = 
-      const value = rec(from, i, A, mem) + A[from] * A[i] * A[to] + rec(i, to, A, mem);
-      minValue = Math.min(minValue, value);
+  for (let i = 0; i <= A.length-1; i++) {
+    if (i === 0) {
+      dp_high[i] = 1;
+      dp_low[i] = 1;
+    } else if (A[i] > A[i-1]) {
+      dp_high[i] = dp_low[i-1] + 1;
+      dp_low[i] = 1;
+    } else if (A[i] < A[i-1]) {
+      dp_high[i] = 1;
+      dp_low[i] = dp_high[i-1] + 1;
+    } else {
+      dp_high[i] = 1;
+      dp_low[i] = 1;
     }
-    mem[from][to] = minValue;
-    return minValue;
+      // console.log(dp_high,dp_low)
+    max = Math.max(max, dp_high[i], dp_low[i]);
   }
-}
+  return max;
 
-// console.log(minScoreTriangulation([3,7,4,5]))
+};
