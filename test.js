@@ -1,23 +1,44 @@
 /**
- * @param {number[]} arr
- * @param {number} start
- * @return {boolean}
+ * @param {number[]} nums
+ * @param {number} S
+ * @return {number}
  */
-var canReach = function(arr, start) {
-  const mem = {};
-  return jump(start, arr, mem);
+var findTargetSumWays = function(nums, S) {
+  const dp = [];
+
+  for (let i = nums.length-1; i >= 0; i--) {
+    const currentValue = nums[i];
+    const o = {};
+
+    if (i === nums.length-1) {
+      if (currentValue === 0) {
+        o[0] = 2;
+      } else {
+        o[currentValue] = 1;
+        o[-currentValue] = 1;
+      }
+    } else {
+      const lastHash = dp[i+1];
+      for (let v in lastHash) {
+        const value = parseInt(v, 10);
+        const newValue1 = value + currentValue;
+        const newValue2 = value - currentValue;
+        if (o[newValue1]) {
+          o[newValue1] = o[newValue1] + lastHash[v];
+        } else {
+          o[newValue1] = lastHash[v];
+        }
+        if (o[newValue2]) {
+          o[newValue2] = o[newValue2] + lastHash[v];
+        } else {
+          o[newValue2] = lastHash[v];
+        }
+      }
+    }
+    dp[i] = o;
+  }
+  console.log(dp);
+  return dp[0][S]? dp[0][S] : 0;
 };
 
-const jump = (start, arr, mem) => {
-  console.log(mem)
-  if (start < 0 || start > arr.length - 1) return false;
-  if (mem[start]) return false;
-  mem[start] = true;
-  if (arr[start] === 0) return true;
-
-  const step = arr[start];
-
-  return jump(start+step, arr, mem) || jump(start-step, arr, mem);
-}
-
-console.log(canReach([4,2,3,0,3,1,2], 5))
+findTargetSumWays([1,0], 1)
