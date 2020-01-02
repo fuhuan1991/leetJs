@@ -1,64 +1,60 @@
 /**
- * @param {number} N
- * @param {number} K
- * @param {number} r
- * @param {number} c
- * @return {number}
+ * @param {string} dominoes
+ * @return {string}
  */
-var knightProbability = function(N, K, r, c) {
-  if (K === 0) return 1;
-  const dp = new Array(N);
-  for (let i = 0; i <= N-1; i++) {
-    dp[i] = new Array(N);
-    for (let j = 0; j <= N-1; j++) {
-      dp[i][j] = new Array(K+1).fill(0);
+var pushDominoes = function(dominoes) {
+  const dpL = [];
+  const dpR = [];
+
+  let lastDistance = null;
+  for (let i = 0; i<= dominoes.length-1; i++) {
+    if (dominoes[i] === 'L') {
+      dpR[i] = 0;
+      lastDistance = null;
+    } else if (dominoes[i] === 'R'){
+      dpR[i] = 0;
+      lastDistance = 0;
+    } else if (lastDistance !== null) {
+      dpR[i] = lastDistance+1;
+      lastDistance++;
+    } else {
+      dpR[i] = 0;
     }
   }
 
-  const isInside  = (col, row) => {
-    // console.log(col,row)
-    if (col < 0 || col > N-1 || row < 0 || row > N-1) {
-      // console.log(col,row);
-      return false;
-    }
-    
-    return true; 
-  }
-
-  for (let step = 1; step <= K; step++) {
-    for (let rr = 0; rr <= N-1; rr++) {
-      for (let cc = 0; cc <= N-1; cc++) {
-        if (step === 1) {
-          let v = 0;
-          if (isInside(cc+2, rr+1)) v++;
-          if (isInside(cc+2, rr-1)) v++;
-          if (isInside(cc-2, rr+1)) v++;
-          if (isInside(cc-2, rr-1)) v++;
-          if (isInside(cc+1, rr+2)) v++;
-          if (isInside(cc+1, rr-2)) v++;
-          if (isInside(cc-1, rr+2)) v++;
-          if (isInside(cc-1, rr-2)) v++;
-          
-          dp[cc][rr][step] = v/8;
-        } else {
-          let v = 0;
-          if (isInside(cc+2, rr+1)) v = v + dp[cc+2][rr+1][step-1];
-          if (isInside(cc+2, rr-1)) v = v + dp[cc+2][rr-1][step-1];
-          if (isInside(cc-2, rr+1)) v = v + dp[cc-2][rr+1][step-1];
-          if (isInside(cc-2, rr-1)) v = v + dp[cc-2][rr-1][step-1];
-          if (isInside(cc+1, rr+2)) v = v + dp[cc+1][rr+2][step-1];
-          if (isInside(cc+1, rr-2)) v = v + dp[cc+1][rr-2][step-1];
-          if (isInside(cc-1, rr+2)) v = v + dp[cc-1][rr+2][step-1];
-          if (isInside(cc-1, rr-2)) v = v + dp[cc-1][rr-2][step-1];
-          dp[cc][rr][step] = v/8
-        }
-      } 
+  lastDistance = null;
+  for (let i = dominoes.length-1; i >= 0; i--) {
+    if (dominoes[i] === 'L') {
+      dpL[i] = 0;
+      lastDistance = 0;
+    } else if (dominoes[i] === 'R'){
+      dpL[i] = 0;
+      lastDistance = null;
+    } else if (lastDistance !== null) {
+      dpL[i] = lastDistance+1;
+      lastDistance++;
+    } else {
+      dpL[i] = 0;
     }
   }
-  console.log(dp)
-  return dp[c][r][K];
+  console.log(dpR,dpL)
+  const r = [];
+  for (let i = 0; i <= dominoes.length-1; i++) {
+    if (dpL[i] === 0 && dpR[i] === 0) {
+      r[i] = dominoes[i];
+    } else if (dpL[i] === 0 && dpR[i] > 0) {
+      r[i] = 'R';
+    } else if (dpR[i] === 0 && dpL[i] > 0) {
+      r[i] = 'L';
+    } else if (dpL[i] > dpR[i]) {
+      r[i] = 'R';
+    } else if (dpL[i] < dpR[i]) {
+      r[i] = 'L';
+    } else if (dpL[i] === dpR[i]) {
+      r[i] = '.';
+    }
+  }
+  return r.join('');
 };
 
-
-console.log(knightProbability(3,3,0,0));
-
+console.log(pushDominoes('.L.R...LR..L..'));
