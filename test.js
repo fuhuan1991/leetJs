@@ -1,44 +1,64 @@
 /**
- * @param {number[]} nums
- * @param {number} S
+ * @param {number} N
+ * @param {number} K
+ * @param {number} r
+ * @param {number} c
  * @return {number}
  */
-var findTargetSumWays = function(nums, S) {
-  const dp = [];
-
-  for (let i = nums.length-1; i >= 0; i--) {
-    const currentValue = nums[i];
-    const o = {};
-
-    if (i === nums.length-1) {
-      if (currentValue === 0) {
-        o[0] = 2;
-      } else {
-        o[currentValue] = 1;
-        o[-currentValue] = 1;
-      }
-    } else {
-      const lastHash = dp[i+1];
-      for (let v in lastHash) {
-        const value = parseInt(v, 10);
-        const newValue1 = value + currentValue;
-        const newValue2 = value - currentValue;
-        if (o[newValue1]) {
-          o[newValue1] = o[newValue1] + lastHash[v];
-        } else {
-          o[newValue1] = lastHash[v];
-        }
-        if (o[newValue2]) {
-          o[newValue2] = o[newValue2] + lastHash[v];
-        } else {
-          o[newValue2] = lastHash[v];
-        }
-      }
+var knightProbability = function(N, K, r, c) {
+  if (K === 0) return 1;
+  const dp = new Array(N);
+  for (let i = 0; i <= N-1; i++) {
+    dp[i] = new Array(N);
+    for (let j = 0; j <= N-1; j++) {
+      dp[i][j] = new Array(K+1).fill(0);
     }
-    dp[i] = o;
   }
-  console.log(dp);
-  return dp[0][S]? dp[0][S] : 0;
+
+  const isInside  = (col, row) => {
+    // console.log(col,row)
+    if (col < 0 || col > N-1 || row < 0 || row > N-1) {
+      // console.log(col,row);
+      return false;
+    }
+    
+    return true; 
+  }
+
+  for (let step = 1; step <= K; step++) {
+    for (let rr = 0; rr <= N-1; rr++) {
+      for (let cc = 0; cc <= N-1; cc++) {
+        if (step === 1) {
+          let v = 0;
+          if (isInside(cc+2, rr+1)) v++;
+          if (isInside(cc+2, rr-1)) v++;
+          if (isInside(cc-2, rr+1)) v++;
+          if (isInside(cc-2, rr-1)) v++;
+          if (isInside(cc+1, rr+2)) v++;
+          if (isInside(cc+1, rr-2)) v++;
+          if (isInside(cc-1, rr+2)) v++;
+          if (isInside(cc-1, rr-2)) v++;
+          
+          dp[cc][rr][step] = v/8;
+        } else {
+          let v = 0;
+          if (isInside(cc+2, rr+1)) v = v + dp[cc+2][rr+1][step-1];
+          if (isInside(cc+2, rr-1)) v = v + dp[cc+2][rr-1][step-1];
+          if (isInside(cc-2, rr+1)) v = v + dp[cc-2][rr+1][step-1];
+          if (isInside(cc-2, rr-1)) v = v + dp[cc-2][rr-1][step-1];
+          if (isInside(cc+1, rr+2)) v = v + dp[cc+1][rr+2][step-1];
+          if (isInside(cc+1, rr-2)) v = v + dp[cc+1][rr-2][step-1];
+          if (isInside(cc-1, rr+2)) v = v + dp[cc-1][rr+2][step-1];
+          if (isInside(cc-1, rr-2)) v = v + dp[cc-1][rr-2][step-1];
+          dp[cc][rr][step] = v/8
+        }
+      } 
+    }
+  }
+  console.log(dp)
+  return dp[c][r][K];
 };
 
-findTargetSumWays([1,0], 1)
+
+console.log(knightProbability(3,3,0,0));
+
