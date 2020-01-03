@@ -1,26 +1,32 @@
 /**
- * @param {number} n
+ * @param {number[]} A
+ * @param {number} K
  * @return {number}
  */
-var countNumbersWithUniqueDigits = function(n) {
-  if (n === 0) return 1;
-  if (n === 1) return 10;
-  let r = 10;
-  for (let i = 2; i <= Math.min(n, 10); i++) {
-    r += helper(i);
+var largestSumOfAverages = function(A, K) {
+  const N = A.length;
+  const p = new Array(N).fill(0);
+  const dp = new Array(N).fill(0);
+  p[0] = A[0];
+  for (let i = 1; i <= N-1; ++i) {
+    p[i] = A[i] + p[i-1]; 
   }
-  return r;
+
+  for (let i = 0; i <= N-1; ++i) {
+    dp[i] = new Array(K).fill(0);
+    dp[i][0] = p[i]/(i+1);
+  }
+  console.log(dp)
+  for (let end = 0; end <= N-1; ++end) {
+    for (let j = 1; j <= end; ++j) {
+      for (n = 1; n <= K-1; ++n) {
+        const v = dp[j-1][n-1] + (p[end] - p[j-1])/(end - j + 1);
+        dp[end][n] = Math.max(dp[end][n], v);
+      }
+    }
+  }
+  // console.log(dp)
+  return dp[N-1][K-1];
 };
 
-const helper = (k) => {
-  let r = 9;
-  let v = 9;
-  while (k > 1) {
-    r = r * v;
-    v--;
-    k--;
-  } 
-  return r;
-}
-
-// console.log(helper(3))
+console.log(largestSumOfAverages([9,1,2,3,9], 3));
