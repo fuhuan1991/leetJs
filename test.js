@@ -1,60 +1,33 @@
 /**
- * @param {string} dominoes
- * @return {string}
+ * @param {number[]} A
+ * @return {number}
  */
-var pushDominoes = function(dominoes) {
-  const dpL = [];
-  const dpR = [];
+var lenLongestFibSubseq = function(A) {
+  const N = A.length;
+  const dp = new Array(N);
+  const index = {};
+  let max = 0;
 
-  let lastDistance = null;
-  for (let i = 0; i<= dominoes.length-1; i++) {
-    if (dominoes[i] === 'L') {
-      dpR[i] = 0;
-      lastDistance = null;
-    } else if (dominoes[i] === 'R'){
-      dpR[i] = 0;
-      lastDistance = 0;
-    } else if (lastDistance !== null) {
-      dpR[i] = lastDistance+1;
-      lastDistance++;
-    } else {
-      dpR[i] = 0;
-    }
+  for (let i = 0; i <= N-1; ++i) {
+    dp[i] = new Array(N).fill(2);
+  }
+  for (let i = 0; i <= N-1; ++i) {
+    index[A[i]] = i;
   }
 
-  lastDistance = null;
-  for (let i = dominoes.length-1; i >= 0; i--) {
-    if (dominoes[i] === 'L') {
-      dpL[i] = 0;
-      lastDistance = 0;
-    } else if (dominoes[i] === 'R'){
-      dpL[i] = 0;
-      lastDistance = null;
-    } else if (lastDistance !== null) {
-      dpL[i] = lastDistance+1;
-      lastDistance++;
-    } else {
-      dpL[i] = 0;
+  for (let i = 0; i <= N-1; ++i) {
+    for (let j = i+1; j<= N-1; ++j) {
+      const diff = A[j] - A[i];
+      const x = index[diff];
+      if (x !== undefined && x >= 0 && x <= N-1 && x < i) {
+        dp[i][j] = dp[x][i] + 1;
+        max = Math.max(max, dp[i][j]);
+      }
+
     }
   }
-  console.log(dpR,dpL)
-  const r = [];
-  for (let i = 0; i <= dominoes.length-1; i++) {
-    if (dpL[i] === 0 && dpR[i] === 0) {
-      r[i] = dominoes[i];
-    } else if (dpL[i] === 0 && dpR[i] > 0) {
-      r[i] = 'R';
-    } else if (dpR[i] === 0 && dpL[i] > 0) {
-      r[i] = 'L';
-    } else if (dpL[i] > dpR[i]) {
-      r[i] = 'R';
-    } else if (dpL[i] < dpR[i]) {
-      r[i] = 'L';
-    } else if (dpL[i] === dpR[i]) {
-      r[i] = '.';
-    }
-  }
-  return r.join('');
+  console.log(dp)
+  return max;
 };
 
-console.log(pushDominoes('.L.R...LR..L..'));
+lenLongestFibSubseq([1,2,3,4,5,6,7,8])
