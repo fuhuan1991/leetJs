@@ -1,32 +1,42 @@
 /**
- * @param {number[]} A
- * @param {number} K
+ * @param {number[][]} clips
+ * @param {number} T
  * @return {number}
  */
-var largestSumOfAverages = function(A, K) {
-  const N = A.length;
-  const p = new Array(N).fill(0);
-  const dp = new Array(N).fill(0);
-  p[0] = A[0];
-  for (let i = 1; i <= N-1; ++i) {
-    p[i] = A[i] + p[i-1]; 
-  }
-
-  for (let i = 0; i <= N-1; ++i) {
-    dp[i] = new Array(K).fill(0);
-    dp[i][0] = p[i]/(i+1);
-  }
-  console.log(dp)
-  for (let end = 0; end <= N-1; ++end) {
-    for (let j = 1; j <= end; ++j) {
-      for (n = 1; n <= K-1; ++n) {
-        const v = dp[j-1][n-1] + (p[end] - p[j-1])/(end - j + 1);
-        dp[end][n] = Math.max(dp[end][n], v);
+var videoStitching = function(clips, T) {
+  clips.sort((a, b) => a[0] - b[0]);
+  // let cover = 0;
+  const arr = [];
+  
+  for (let clip of clips) {
+    if (arr.length === 0) {
+      if (clip[0] !== 0) return -1; 
+      arr.push(clip);
+      // cover = clip[1];
+    } else {
+      const lastClip = arr[arr.length-1];
+      if (clip[0] >= lastClip[0] && clip[1] <= lastClip[1]) {
+        continue;
+      } else if (clip[0] === lastClip[0] && clip[1] >= lastClip[1]) {
+        arr.pop();
+        arr.push(clip);
+      } else if (clip[0] > lastClip[1]){
+        return -1;
+      } else {
+        for (let i = 0; i <= arr.length-2; i++) {
+          if (arr[i][1] >= clip[0]) {
+            while(i < arr.length-1) {
+              arr.pop();
+              i++;
+            }
+            break;
+          }
+        }
+        arr.push(clip);
       }
     }
   }
-  // console.log(dp)
-  return dp[N-1][K-1];
+  if (arr[arr.length-1][1] < T) return -1;
+  // console.log(arr);
+  return arr.length;
 };
-
-console.log(largestSumOfAverages([9,1,2,3,9], 3));
