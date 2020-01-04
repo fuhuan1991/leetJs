@@ -1,38 +1,37 @@
 /**
- * @param {string} s
+ * @param {number} d
+ * @param {number} f
+ * @param {number} target
  * @return {number}
  */
-var longestPalindromeSubseq = function(s) {
-  const N = s.length;
-  const dp = new Array(N);
-  for (let i = 0; i <= N-1; ++i) {
-    dp[i] = new Array(N).fill(0);
-    dp[i][i] = 1;
-    if (i+1 <= N-1) {
-      if (s[i] === s[i+1]) {
-        dp[i][i+1] = 2;
-      } else {
-        dp[i][i+1] = 1
-      }
-    }
+var numRollsToTarget = function(d, f, target) {
+  const dp = new Array(d + 1);
+  const M = 1000000000+7;
+  for (let i = 0; i <= d; ++i) {
+    dp[i] = new Array(target + 1).fill(0);
   }
-  
-  for (let k = 2; k <= N-1; ++k) {
-    let end = k;
-    let start = 0;
-    while (start <= N-1 && end <= N-1) {
-      if (s[start] === s[end]) {
-        dp[start][end] = dp[start+1][end-1] + 2;
+
+  for (let dices = 1; dices <= d; ++dices) {
+    for (let t = 0; t <= target; t++) {
+      if (dices === 1) {
+        if (t === 0) {
+          dp[dices][t] = 0;
+        } else if (1 <= t && t <= f) {
+          dp[dices][t] = 1;
+        } else {
+          dp[dices][t] = 0;
+        }
       } else {
-        dp[start][end] = Math.max(dp[start+1][end], dp[start][end-1]);
+        let sum = 0;
+        for (let k = t-1; k >= t-f && k >= 0; --k) {
+          sum += dp[dices-1][k];
+        }
+        dp[dices][t] = sum%M;
       }
-      end++;
-      start++;
     }
   }
   console.log(dp)
-  return dp[0][N-1];
+  return dp[d][target];
 };
 
-
-console.log(longestPalindromeSubseq('bbbab'))
+console.log(numRollsToTarget(2,6,7));
