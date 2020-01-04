@@ -1,42 +1,32 @@
 /**
- * @param {number[][]} clips
- * @param {number} T
+ * @param {number[]} A
  * @return {number}
  */
-var videoStitching = function(clips, T) {
-  clips.sort((a, b) => a[0] - b[0]);
-  // let cover = 0;
-  const arr = [];
-  
-  for (let clip of clips) {
-    if (arr.length === 0) {
-      if (clip[0] !== 0) return -1; 
-      arr.push(clip);
-      // cover = clip[1];
+var longestArithSeqLength = function(A) {
+  const dp = new Array(A.length);
+  for (let i = 0; i<= A.length-1; ++i) {
+    dp[i] = {};
+  }
+
+  let max = 2;
+
+  for (let i = 0; i<= A.length-1; ++i) {
+    if (i === 0) {
+      dp[i] = {};
     } else {
-      const lastClip = arr[arr.length-1];
-      if (clip[0] >= lastClip[0] && clip[1] <= lastClip[1]) {
-        continue;
-      } else if (clip[0] === lastClip[0] && clip[1] >= lastClip[1]) {
-        arr.pop();
-        arr.push(clip);
-      } else if (clip[0] > lastClip[1]){
-        return -1;
-      } else {
-        for (let i = 0; i <= arr.length-2; i++) {
-          if (arr[i][1] >= clip[0]) {
-            while(i < arr.length-1) {
-              arr.pop();
-              i++;
-            }
-            break;
-          }
+      dp[i] = {};
+      for (let j = 0; j<= i-1; ++j) {
+        const diff = A[i] - A[j];
+        if (dp[j][diff]) {
+          dp[i][diff] = dp[j][diff] + 1;
+        } else {
+          dp[i][diff] = 2;
         }
-        arr.push(clip);
+        max = Math.max(max, dp[i][diff]);
       }
     }
   }
-  if (arr[arr.length-1][1] < T) return -1;
-  // console.log(arr);
-  return arr.length;
+  return max;
 };
+
+console.log(longestArithSeqLength([9,4,7,2,10]));
