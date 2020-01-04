@@ -1,32 +1,38 @@
 /**
- * @param {number[]} A
+ * @param {string} s
  * @return {number}
  */
-var longestArithSeqLength = function(A) {
-  const dp = new Array(A.length);
-  for (let i = 0; i<= A.length-1; ++i) {
-    dp[i] = {};
-  }
-
-  let max = 2;
-
-  for (let i = 0; i<= A.length-1; ++i) {
-    if (i === 0) {
-      dp[i] = {};
-    } else {
-      dp[i] = {};
-      for (let j = 0; j<= i-1; ++j) {
-        const diff = A[i] - A[j];
-        if (dp[j][diff]) {
-          dp[i][diff] = dp[j][diff] + 1;
-        } else {
-          dp[i][diff] = 2;
-        }
-        max = Math.max(max, dp[i][diff]);
+var longestPalindromeSubseq = function(s) {
+  const N = s.length;
+  const dp = new Array(N);
+  for (let i = 0; i <= N-1; ++i) {
+    dp[i] = new Array(N).fill(0);
+    dp[i][i] = 1;
+    if (i+1 <= N-1) {
+      if (s[i] === s[i+1]) {
+        dp[i][i+1] = 2;
+      } else {
+        dp[i][i+1] = 1
       }
     }
   }
-  return max;
+  
+  for (let k = 2; k <= N-1; ++k) {
+    let end = k;
+    let start = 0;
+    while (start <= N-1 && end <= N-1) {
+      if (s[start] === s[end]) {
+        dp[start][end] = dp[start+1][end-1] + 2;
+      } else {
+        dp[start][end] = Math.max(dp[start+1][end], dp[start][end-1]);
+      }
+      end++;
+      start++;
+    }
+  }
+  console.log(dp)
+  return dp[0][N-1];
 };
 
-console.log(longestArithSeqLength([9,4,7,2,10]));
+
+console.log(longestPalindromeSubseq('bbbab'))
