@@ -1,37 +1,47 @@
 /**
- * @param {number} d
- * @param {number} f
- * @param {number} target
+ * @param {string} s
+ * @param {string} t
  * @return {number}
  */
-var numRollsToTarget = function(d, f, target) {
-  const dp = new Array(d + 1);
-  const M = 1000000000+7;
-  for (let i = 0; i <= d; ++i) {
-    dp[i] = new Array(target + 1).fill(0);
+var numDistinct = function(s, t) {
+  const N = s.length;
+  const M = t.length;
+
+  if (N === 0 && M > 0) return 0;
+  if (N === 0 && M === 0) return 1;
+
+  const dp = new Array(N);
+  for (let i = 0; i <= N-1; i++) {
+    dp[i] = new Array(M).fill(0);
   }
 
-  for (let dices = 1; dices <= d; ++dices) {
-    for (let t = 0; t <= target; t++) {
-      if (dices === 1) {
-        if (t === 0) {
-          dp[dices][t] = 0;
-        } else if (1 <= t && t <= f) {
-          dp[dices][t] = 1;
+  for (let i = 0; i <= N-1; ++i) {
+    for (let j = 0; j <= M-1; ++j) {
+      if (i < j) {
+        dp[i][j] = 0;
+      } else if (i === j) {
+        if (s.slice(0, i+1) === t.slice(0, j+1)) {
+          dp[i][j] = 1;
         } else {
-          dp[dices][t] = 0;
+          dp[i][j] = 0;
+        }
+      } else if (j === 0) {
+        if (s.charAt(i) === t.charAt(j)) {
+          dp[i][j] = 1 + dp[i-1][j];
+        } else {
+          dp[i][j] = dp[i-1][j];
         }
       } else {
-        let sum = 0;
-        for (let k = t-1; k >= t-f && k >= 0; --k) {
-          sum += dp[dices-1][k];
+        if (s.charAt(i) === t.charAt(j)) {
+          dp[i][j] = dp[i-1][j-1] + dp[i-1][j];
+        } else {
+          dp[i][j] = dp[i-1][j];
         }
-        dp[dices][t] = sum%M;
       }
     }
   }
-  console.log(dp)
-  return dp[d][target];
+console.log(dp)
+  return dp[N-1][M-1];
 };
 
-console.log(numRollsToTarget(2,6,7));
+numDistinct("babgbag","bag");
