@@ -1,47 +1,25 @@
 /**
- * Definition for singly-linked list.
- * function ListNode(val) {
- *     this.val = val;
- *     this.next = null;
- * }
+ * @param {number[]} arr
+ * @param {number[][]} queries
+ * @return {number[]}
  */
-/**
- * @param {ListNode} head
- * @return {ListNode}
- */
-var insertionSortList = function(head) {
-  if (!head) return null;
-  if (head.next === null) return head;
-
-  let newNode = head.next;
-  let newHead = head;
-  newHead.next = null;
-
-  while (newNode) {
-    let temp = newNode.next;
-    newNode.next = null;
-    newHead = insert(newHead, newNode);
-    newNode = temp;
+var xorQueries = function(arr, queries) {
+  let sum = 0;
+  const xorSum = [];
+  for (let i = 0; i<= arr.length-1; ++i) {
+    sum = sum ^ arr[i];
+    xorSum[i] = sum;
   }
-
-  return newHead;
+  // console.log(xorSum)
+  return queries.map((q) => {
+    const start = q[0];
+    const end = q[1];
+    if (start === 0) {
+      return xorSum[end];
+    } else if (start === end) {
+      return arr[start];
+    } else {
+      return xorSum[end] ^ xorSum[start-1];
+    }
+  });
 };
-
-const insert = (head, newNode) => {
-  let current = head;
-  let last = null;
-
-  while (current && newNode.val > current.val) {
-    last = current;
-    current = current.next;
-  }
-
-  if (last) {
-    last.next = newNode;
-    newNode.next = current;
-    return head;
-  } else {
-    newNode.next = head;
-    return newNode;
-  }
-}
