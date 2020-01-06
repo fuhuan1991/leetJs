@@ -7,28 +7,23 @@
  */
 /**
  * @param {TreeNode} root
- * @return {boolean}
+ * @param {number} val
+ * @return {TreeNode}
  */
-var checkEqualTree = function(root) {
-  if (!root) return false;
-  const sum = getSum(root);
-  const target = sum/2;
-  const result = {value: false};
-  check(root, target, result);
-  return result.value;
+var insertIntoMaxTree = function(root, val) {
+  return insert(root, val);
 };
 
-const getSum = (node) => {
-  if (!node) return 0;
-  return getSum(node.left) + getSum(node.right) + node.val;
-}
-
-const check = (node, target, result) => {
-  if (!node) return 0;
-  const sum1 = check(node.left, target, result);
-  const sum2 = check(node.right, target, result);
-
-  if ((sum1 === target && node.left) || (sum2 === target && node.right)) result.value = true;
-
-  return node.val + sum1 + sum2;
+const insert = (root, val) => {
+  if (!root || val > root.val) {
+    const newNode = {
+      val: val,
+      left: root,
+      right: null,
+    }
+    return newNode;
+  } else {
+    root.right = insert(root.right, val);
+    return root;
+  }
 }
