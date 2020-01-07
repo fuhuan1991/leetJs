@@ -7,37 +7,48 @@
  */
 /**
  * @param {TreeNode} root
- * @param {number} k
- * @return {number}
+ * @param {number[]} voyage
+ * @return {number[]}
  */
-var findClosestLeaf = function(root, k) {
-  let target = null;
-  connect(root, k, (t) => {
-    target = t;
-  });
-  const Q = [target];
-  const mem = new Set();
-  while(Q.length > 0) {
-    const node = Q.shift();
-    mem.add(node);
-    if (node.left === null && node.right === null) {
-      return node.val;
-    } else {
-      if (node.left && !mem.has(node.left)) Q.push(node.left);
-      if (node.right && !mem.has(node.right)) Q.push(node.right);
-      if (node.parent && !mem.has(node.parent)) Q.push(node.parent);
-    }
+var flipMatchVoyage = function(root, voyage) {
+  const indexMap = {};
+  for (let i = 0; i <= voyage.length-1; ++i) {
+    const v = voyage[i];
+    if (indexMap[v]) return [-1];
+    indexMap[v] = i;
   }
+  const needToFlip = [];
+  let invalid = false;
+  check(root, voyage, indexMap, needToFlip, () => {
+    invalid = true;
+  });
+  if (invalid) return [-1];
+  return needToFlip;
 };
 
-const connect = (node, k, cb) => {
-  if (node.val === k) cb(node);
-  if (node.left) {
-    node.left.parent = node;
-    connect(node.left, k, cb);
-  }
-  if (node.right) {
-    node.right.parent = node;
-    connect(node.right, k, cb);
+const check = (node, voyage, indexMap, needToFlip, fail) => {
+  const iRoot = indexMap[node.val];
+  if (node.left && node.right) {
+    const iLeft = indexMap[node.left.val];
+    const iRight = indexMap[node.right.val];
+    if (iLeft === iRoot + 1) {
+      check(node.left, voyage, indexMap, needToFlip, fail);
+      check(node.right, voyage, indexMap, needToFlip, fail);
+    } else if (iRight === iRoot + 1) {
+      needToFlip.push(node.val);
+      check(node.left, voyage, indexMap, needToFlip, fail);
+      check(node.right, voyage, indexMap, needToFlip, fail);
+    } else {
+      fail();
+    }
+  } else if (node.left || node.right) {
+    const childNode = node.left? node.left : node.right;
+    const childVal = childNode.val;
+    const childIndex = indexMap[childVal];
+    if (childIndex === iRoot + 1) {
+      check(childNode, voyage, indexMap, needToFlip, fail);
+    } else {
+      fail();
+    }
   }
 }
