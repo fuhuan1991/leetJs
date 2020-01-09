@@ -2,21 +2,21 @@
  * @param {string} S
  * @return {number}
  */
-var minAddToMakeValid = function(S) {
-  let counter = 0;
-  let r = 0;
-
+var scoreOfParentheses = function(S) {
+  const stack = [0];
   for (let i = 0; i <= S.length-1; ++i) {
-    const current = S.charAt(i);
-    if (current === '(') {
-      counter++;
+    if (S[i] === '(') {
+      stack.push(0);
     } else {
-      if (counter > 0) {
-        counter--;
+      const sum = stack[stack.length-1];
+      if (sum === 0) {
+        stack.pop();
+        stack[stack.length-1]++;
       } else {
-        r++;
+        stack.pop();
+        stack[stack.length-1] += 2 * sum;
       }
     }
   }
-  return r + counter;
+  return stack[0];
 };
