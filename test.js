@@ -1,31 +1,38 @@
 /**
- * @param {number[]} A
- * @return {number}
+ * Definition for singly-linked list.
+ * function ListNode(val) {
+ *     this.val = val;
+ *     this.next = null;
+ * }
  */
-var sumSubarrayMins = function(A) {
-  const minStack = [];
-  let r = 0;
-  let rowSum = 0;
-  const MOD = 1_000_000_007;
+/**
+ * @param {ListNode} head
+ * @return {number[]}
+ */
+var nextLargerNodes = function(head) {
+  const stack = [];
+  const r = [];
+  rec(head, stack, r);
 
-  for (let end = 0; end <= A.length-1; ++end) {
-    if (minStack.length === 0) {
-      minStack.push([A[end], 1]);
-      r += A[end];
-      rowSum = r;
-    } else {
-      const newValue = A[end];
-      let newCounter = 1;
-      while (minStack.length > 0 && minStack[minStack.length-1][0] >= newValue) {
-        const p = minStack.pop();
-        newCounter = newCounter + p[1];
-        rowSum = rowSum - p[1] * p[0];
-      }
-      minStack.push([newValue, newCounter])
-      rowSum = rowSum + newValue * newCounter;
-      r = r + rowSum;
-      r = r % MOD;
-    }
-  }
+  
   return r;
 };
+
+
+const rec = (node, stack, r) => {
+  if (!node) return;
+  rec(node.next, stack, r);
+
+  while (stack.length > 0 && node.val >= stack[0]) {
+    stack.shift();
+  }
+
+  if (stack.length === 0) {
+    r.unshift(0);
+  } else {
+    r.unshift(stack[0])
+  }
+
+  stack.unshift(node.val);
+  return;
+}
