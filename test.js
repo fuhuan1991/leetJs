@@ -1,28 +1,27 @@
 /**
- * @param {number} steps
- * @param {number} arrLen
+ * @param {number} n
  * @return {number}
  */
-var numWays = function(steps, arrLen) {
-  const dp = new Array(steps+1);
-  for (let i = 0; i <= steps; ++i) {
-    dp[i] = [];
-  }
-  dp[0][0] = 1;
-  // dp[0][1] = 0;
+var countVowelPermutation = function(n) {
+  let currentArr = [1,1,1,1,1];
+  // let lastArr = null;
+  let i = 1;
   const M = 1000000007;
-// console.log(dp)
-  for (let i = 1; i <= steps; ++i) {
-    for (let pos = 0; pos <= i; ++pos) {
-      const v1 = pos === 0 ? 0 : dp[i-1][pos-1];
-      const v2 = (dp[i-1][pos] === undefined)? 0 : dp[i-1][pos];
-      const v3 = (pos === arrLen-1 || dp[i-1][pos+1] === undefined) ? 0 : dp[i-1][pos+1];
-      console.log(v1,v2,v3)
-
-      dp[i][pos] = (v1 + v2 + v3)%M; 
-    }
+  while (i < n) {
+    const nextArr = [];
+    //a
+    nextArr[0] = (currentArr[1] + currentArr[2] + currentArr[4])%M;
+    //e
+    nextArr[1] = (currentArr[0] + currentArr[2])%M;
+    //i
+    nextArr[2] = (currentArr[1] + currentArr[3])%M;
+    //o
+    nextArr[3] = (currentArr[2])%M;
+    //u
+    nextArr[4] = (currentArr[2] + currentArr[3])%M;
+    currentArr = nextArr;
+    i++;
   }
 
-  return dp[steps][0];
-
+  return (currentArr[0] + currentArr[1] + currentArr[2] + currentArr[3] + currentArr[4])%M;
 };
