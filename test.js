@@ -1,26 +1,28 @@
 /**
- * @param {number} target
- * @param {number} startFuel
- * @param {number[][]} stations
+ * @param {number} steps
+ * @param {number} arrLen
  * @return {number}
  */
-var minRefuelStops = function(target, startFuel, stations) {
-  const N = stations.length;
-  const dp = new Array(N+1).fill(0);
-  // const st = [[0,0], ...stations];
-  dp[0] = startFuel;
+var numWays = function(steps, arrLen) {
+  const dp = new Array(steps+1);
+  for (let i = 0; i <= steps; ++i) {
+    dp[i] = [];
+  }
+  dp[0][0] = 1;
+  // dp[0][1] = 0;
+  const M = 1000000007;
+// console.log(dp)
+  for (let i = 1; i <= steps; ++i) {
+    for (let pos = 0; pos <= i; ++pos) {
+      const v1 = pos === 0 ? 0 : dp[i-1][pos-1];
+      const v2 = (dp[i-1][pos] === undefined)? 0 : dp[i-1][pos];
+      const v3 = (pos === arrLen-1 || dp[i-1][pos+1] === undefined) ? 0 : dp[i-1][pos+1];
+      console.log(v1,v2,v3)
 
-  for (let i = 0; i <= N-1; ++i) {
-    for (let t = i+1; t >= 1; t--) {
-      if (dp[t-1] >= stations[i][0]) {
-        dp[t] = Math.max(dp[t], dp[t-1] + stations[i][1]);
-      }
+      dp[i][pos] = (v1 + v2 + v3)%M; 
     }
   }
 
-  for (t = 0; t <= N; t++) {
-    if (dp[t] >= target) return t;
-  }
+  return dp[steps][0];
 
-  return -1;
 };
