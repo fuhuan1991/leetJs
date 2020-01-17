@@ -1,69 +1,62 @@
 /**
- * @param {number[]} stones
- * @param {number} K
- * @return {number}
+ * @param {string} str1
+ * @param {string} str2
+ * @return {string}
  */
+var shortestCommonSupersequence = function(str1, str2) {
+  const l1 = str1.length;
+  const l2 = str2.length;
 
-var mergeStones = function(stones, K) {
-  const prefixSum = [];
-  const N = stones.length;
-  let s = 0;
-  for (let i = 0; i <= stones.length-1; ++i) {
-    s = s + stones[i];
-    prefixSum[i] = s;
+  const dp = new Array(l1+1);
+  for (let i = 0; i <= l1; ++i) {
+    dp[i] = new Array(l2+1).fill('');
   }
-// console.log(prefixSum)
-  const dp = new Array(N);
-  for (let i = 0; i <= N-1; ++i) {
-    dp[i] = new Array(N);
-    for (let j = 0; j <= N-1; ++j) {
-      dp[i][j] = new Array(K+1).fill(Infinity); 
+
+  for (let i = 1; i <= l1; ++i) {
+    for (let j = 1; j <= l2; ++j) {
+      if (str1[i-1] === str2[j-1]) {
+        dp[i][j] = dp[i-1][j-1] + str1[i-1];
+      } else {
+        if (dp[i-1][j].length > dp[i][j-1].length) {
+          dp[i][j] = dp[i-1][j];
+        } else {
+          dp[i][j] = dp[i][j-1];
+        } 
+      }
     }
   }
-// console.log(dp)
-  for (let i = 0; i <= N-1; ++i) {
-    dp[i][i][1] = 0;
-  }
 
-  const r = rec(0, stones.length-1, 1, dp, K, prefixSum);
   // console.log(dp)
-  return (r < Infinity) ? r : -1; 
+  const LCS = dp[l1][l2];
+  // console.log(LCS)
+  if (LCS.length == l1) return str2;
+  if (LCS.length == l2) return str1;
+
+  let p1 = 0, p2 = 0;
+  let r = '';
+  for (let i = 0; i <= LCS.length-1; ++i) {
+    while (str1[p1] !== LCS[i]) {
+      r = r + str1[p1];
+      p1++;
+    }
+    while (str2[p2] !== LCS[i]) {
+      r = r + str2[p2];
+      p2++;
+    }
+    r = r + LCS[i];
+    p1++;
+    p2++;
+  } 
+  while (p1 <= l1-1) {
+    r = r + str1[p1];
+    p1++;
+  }
+  while (p2 <= l2-1) {
+    r = r + str2[p2];
+    p2++;
+  }
+  // console.log(r)
+  return r;
 };
 
-const rec = (start, end, target, dp, K, prefixSum) => {
-// console.log('rec', start, end, target)
-// console.log(dp)
-  if (dp[start][end][target] < Infinity) {
-    return dp[start][end][target];
-  }
-// console.log(1)
-  if ((end - start + 1 - target)%(K-1) !== 0) return Infinity;
-  // console.log(2)
-  if (start === end) {
-    if (target === 1) {
-      dp[start][end][target] = 0;
-      return 0;
-    }
-    if (target !== 1) return Infinity; 
-  }
-  // console.log(3)
-  if (target === 1) {
-    const mk = (dp[start][end][K] < Infinity) ? dp[start][end][K] : rec(start, end, K, dp, K, prefixSum);
-    const r = mk + prefixSum[end] - ((start === 0) ? 0 : prefixSum[start-1]);
-    // console.log('r',r)
-    dp[start][end][target] = r;
-    return r;
-  }
-  // console.log(4)
-  let v = Infinity;
-  for (let mid = start; mid < end; mid = mid+K-1) {
-    const s1 = rec(start, mid, 1, dp, K, prefixSum);
-    const s2 = rec(mid+1, end, target-1, dp, K, prefixSum);
-    v = Math.min(v, s1 + s2);
-    // console.log(start, mid, end, s1, s2, target);
-  }
-  dp[start][end][target] = v;
-  return v;
-}
-
-console.log(mergeStones([3,2,4,1],2))
+shortestCommonSupersequence('abac','cab')
