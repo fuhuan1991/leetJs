@@ -1,26 +1,54 @@
-let index = 10;
+const KMPSearch = (pat, txt) => {
 
+  const M = pat.length;
+  const N = txt.length;
+  const lps = get_lps(pat, M);
 
-const fetch = (page) => {
-  console.log('fetch')
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(page);
-    }, 1000);
-  });
-}
+  let i = 0;
+  let j = 0;
 
-async function fetchAll() {
-  let current = 0;
-  const data = [];
+  while (i < N) {
+    if (pat[j] === txt[i]) {
+      i++;
+      j++;
+    }
 
-  while (current < index) {
-    const d = await fetch(current);
-    data.push(d);
-    console.log(data);
-    current++;
+    if (j === M) {
+      console.log(i + ' Match!');
+      j = lps[j-1];
+    } else if (i < N && pat[j] !== txt[i]){
+      if (j === 0) {
+        i++
+      } else {
+        j = lps[j-1];
+      }
+    }
   }
 }
 
-// fetch().then((res) => { console.log(res) });
-fetchAll()
+const get_lps = (pat, M) => {
+  let len = 0;
+  let i = 1;
+  const lps = [0];
+
+  while (i < M) {
+    if (pat[i] === pat[len]) {
+      len++;
+      lps[i] = len;
+      i++;
+    } else {
+      if (len !== 0) {
+        len = lps[len - 1];
+      } else {
+        lps[i] = len;
+        i++;
+      }
+    }
+  }
+  return lps;
+}
+
+const txt = 'fuhuanjiafufufuhuanngyiweisadhfgioesgfuhuandksghflawfuhuan ';
+const pat = 'fuhuan';
+
+console.log(KMPSearch(pat, txt));
