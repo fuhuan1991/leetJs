@@ -21,16 +21,17 @@ var wallsAndGates = function(rooms) {
 
 var bfs = function (queue, rooms) {
     const node = queue.pop();
-    const dis = node[2];
-
+    
     for (let dir of dirs) {
         const y = node[0] + dir[0];
         const x = node[1] + dir[1];
         if (0 <= y && y < rooms.length && 0 <= x && x < rooms[0].length) {
             if (rooms[y][x] === -1 || rooms[y][x] === 0) continue;
-            if (rooms[y][x] === 2147483647 || rooms[y][x] > dis + 1) {
-                rooms[y][x] = dis + 1;
-                queue.push([y,x,dis+1]);
+            const dis = node[2];
+            const newDis = dis + 1;
+            if (rooms[y][x] > newDis) {
+                rooms[y][x] = newDis;
+                queue.push([y,x,newDis]);
             }
         }
     }
