@@ -10,7 +10,7 @@ var angleClock = function(hour, minutes) {
     const percentage_m = minutes / 60;
     const smaller = Math.min(percentage_h, percentage_m);
     const bigger = Math.max(percentage_h, percentage_m);
-    console.log(smaller, bigger)
+
     if (bigger - smaller < 0.5) {
         return 360 * (bigger - smaller);
     } else {
