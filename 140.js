@@ -4,45 +4,44 @@
  * @return {string[]}
  */
 var wordBreak = function(s, wordDict) {
-  const visited = {};
-
-  const result = f(s, wordDict, visited);
-  // console.log(result)
-  return result;
-};
-
-function f(str, wordDict, visited) {
-  // console.log('visited',visited)
-  // console.log('str', str)
-  if (visited[str]) {
-    return visited[str];
+    
+  let temp = '';
+  for (let word of wordDict) {
+      temp = temp + word;
   }
-  if (str.length === 0) {
-    return [];
+  
+  for (let i = 0; i < s.length; i++) {
+      const c = s.charAt(i);
+      if (temp.indexOf(c) === -1) return []; 
   }
-
-  const result = [];
-
-  for (let i = 0; i <= wordDict.length - 1; i++) {
-    const currentWord = wordDict[i];
-    // console.log('->', currentWord)
-    if (str.indexOf(currentWord) === 0) {
-      // console.log(str)
-      const subStr = str.slice(currentWord.length);
-      if (subStr.length > 0) {
-        const subResult = f(subStr, wordDict, visited);
-        visited[subStr] = subResult;
-        subResult.map((item) => {
-          result.push(currentWord + ' ' + item);
-        });
-      } else {
-        result.push(currentWord);
+  
+  const dp = [[]];
+  
+  for (let prefixLen = 1; prefixLen <= s.length; ++prefixLen) {
+      
+      const prefix = s.slice(0, prefixLen);
+      let list = [];
+      
+      for (let i = 0; i < wordDict.length; ++i) {
+          const word = wordDict[i];
+          if (word.length > prefix.length) continue;
+          if (word === prefix.slice(-word.length) && !!dp[prefixLen - word.length]) {
+              // match !! then add a word to all the lists in the intermediate result
+              if (dp[prefixLen - word.length].length === 0) {
+                  list.push(word);
+              } else {
+                  for (let l of dp[prefixLen - word.length]) {
+                      list.push(l + ' ' + word);
+                  }
+              }
+          }
+          // console.log(dp)
       }
-    }
+      
+      if (list.length === 0) list = null;
+      dp[prefixLen] = list;
   }
-  // console.log(str)
-  // console.log(result)
-  return result;
-}
-
-wordBreak('aaaaaaa', ["aaaa", "aa", "a"]);
+  const res = dp.pop();
+  if (!!res) return res;
+  return [];
+};
