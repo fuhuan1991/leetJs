@@ -1,6 +1,6 @@
 function binaryInsert (arr) {
   let r = [];
-  for (let i = 0; i <= arr.length - 1; i++) {
+  for (let i = 0; i < arr.length; i++) {
 
     let left = 0;
     let right = r.length;
@@ -8,7 +8,7 @@ function binaryInsert (arr) {
 
     while (left < right) {
       const mid = Math.floor((left + right)/2);
-      if (current <= r[mid]) {
+      if (current < r[mid]) {
         right = mid;
       } else {
         left = mid + 1;
@@ -16,6 +16,7 @@ function binaryInsert (arr) {
     }
     r = r.slice(0, right).concat(current, r.slice(right))
   }
+  return r;
 }
 
-binaryInsert([5,2,6,1])
+binaryInsert([1,2,3])
